@@ -3,10 +3,9 @@ streamlit==1.35.0
 pandas==2.2.2
 python-dotenv==1.0.0
 
-# LangChain ecosystem (keep these in sync!)
+# LangChain ecosystem (let them pull matching langchain-core automatically)
 langchain==0.2.14
 langchain-community==0.2.14
-langchain-core==0.2.35
 langchain-groq==0.1.9
 
 # Vector DB
