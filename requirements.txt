@@ -1,9 +1,19 @@
-langchain==0.2.14
-langchain-community==0.2.12
-langchain-groq==0.1.9
-unstructured==0.16.24
-selenium==4.21.0
-chromadb==0.5.0
+# Core app dependencies
 streamlit==1.35.0
 pandas==2.2.2
 python-dotenv==1.0.0
+
+# LangChain ecosystem (keep these in sync!)
+langchain==0.2.14
+langchain-community==0.2.14
+langchain-core==0.2.35
+langchain-groq==0.1.9
+
+# Vector DB
+chromadb==0.5.0
+
+# Document loaders & parsers
+unstructured==0.16.24
+selenium==4.21.0
+requests==2.32.3
+beautifulsoup4==4.12.3
