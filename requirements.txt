@@ -1,9 +1,10 @@
 # Core app dependencies
 streamlit==1.35.0
 pandas==2.2.2
+numpy==1.26.4
 python-dotenv==1.0.0
 
-# LangChain ecosystem (let them pull matching langchain-core automatically)
+# LangChain ecosystem
 langchain==0.2.14
 langchain-community==0.2.14
 langchain-groq==0.1.9
@@ -16,3 +17,7 @@ unstructured==0.16.24
 selenium==4.21.0
 requests==2.32.3
 beautifulsoup4==4.12.3
+
+# To avoid compilation issues on Render
+Cython==3.0.10
+
