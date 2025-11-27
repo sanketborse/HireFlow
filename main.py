@@ -6,7 +6,7 @@ from portfolio import Portfolio
 from utils import clean_text
 
 
-st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
+st.set_page_config(layout="wide", page_title="HireFlow", page_icon="📧")
 
 
 def create_streamlit_app(llm, portfolio, clean_text_fn):
