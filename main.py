@@ -28,9 +28,12 @@ def create_streamlit_app(llm, portfolio, clean_text):
 
 
 if __name__ == "__main__":
-    chain = Chain()
-    portfolio = Portfolio()
+    # Move page config to the very top to avoid Streamlit warnings
     st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
+    
+    chain = Chain()
+    
+    # FIXED LINE: Explicitly pass the correct file path here
+    portfolio = Portfolio(file_path="resource/my_portfolio.csv")
+    
     create_streamlit_app(chain, portfolio, clean_text)
-
-
