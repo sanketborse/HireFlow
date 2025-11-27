@@ -1,7 +1,8 @@
 import os
+import json
+import re
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.exceptions import OutputParserException
 from dotenv import load_dotenv
 
@@ -16,11 +17,17 @@ class Chain:
             model_name="llama-3.3-70b-versatile",
         )
 
-    def extract_jobs(self, cleaned_text):
+    def extract_jobs(self, cleaned_text: str):
         """
         Ask the LLM to extract job postings from the cleaned careers page text.
         Returns a list of job dicts: {role, experience, skills, description}.
         """
+
+        # 🔹 1) Limit context size so we don't overload the model
+        MAX_CHARS = 8000  # you can tweak this if needed
+        if len(cleaned_text) > MAX_CHARS:
+            cleaned_text = cleaned_text[:MAX_CHARS]
+
         prompt_extract = PromptTemplate.from_template(
             """
             ### SCRAPED TEXT FROM WEBSITE:
@@ -28,34 +35,57 @@ class Chain:
 
             ### INSTRUCTION:
             The scraped text is from the careers page of a website.
-            Your job is to extract the job postings and return them in **valid JSON** format.
-            Every job posting object must have the following keys:
+            Your job is to extract the job postings and return them in valid JSON format.
 
-            - "role": string
-            - "experience": string
-            - "skills": list of strings
-            - "description": string
+            Rules:
+            - ALWAYS return a JSON ARRAY, even if there's only one job.
+            - Each job object MUST have the following keys:
+                - "role": string
+                - "experience": string
+                - "skills": list of strings
+                - "description": string
+            - Even if the information is incomplete, still return a best-effort list of jobs.
+            - Do NOT include any explanation, comments, markdown, or text before/after the JSON.
+            - The output must be directly parseable by json.loads().
 
-            If there are multiple roles, return a JSON array of objects.
-            If there is only one role, still return it as a JSON array with one object.
-            Only return the valid JSON. No explanation, no markdown, no comments.
-            Even if the information is incomplete, still return a best-effort list of jobs.
-
-            ### VALID JSON (NO PREAMBLE):
+            ### VALID JSON ARRAY ONLY (NO PREAMBLE):
             """
         )
 
         chain_extract = prompt_extract | self.llm
         res = chain_extract.invoke(input={"page_data": cleaned_text})
+        raw = res.content
 
+        # Debug log (Render logs)
+        print("=== RAW LLM JOB OUTPUT (first 800 chars) ===")
+        print(raw[:800])
+
+        # 🔹 2) Try direct JSON parse
         try:
-            json_parser = JsonOutputParser()
-            parsed = json_parser.parse(res.content)
-        except OutputParserException:
-            raise OutputParserException("Context too big or output not valid JSON.")
+            jobs = json.loads(raw)
+        except json.JSONDecodeError:
+            # 🔹 3) Fallback: try to extract the JSON array from messy output
+            try:
+                match = re.search(r"\[.*\]", raw, re.DOTALL)
+                if not match:
+                    raise OutputParserException("No JSON array found in LLM output.")
+                json_str = match.group(0)
+                jobs = json.loads(json_str)
+            except Exception as e:
+                print("=== JSON PARSE FAILED ===")
+                print(str(e))
+                raise OutputParserException(
+                    "Context too big or output not valid JSON."
+                )
 
-        # Ensure result is always a list of job dicts
-        return parsed if isinstance(parsed, list) else [parsed]
+        # 🔹 4) Normalize to list
+        if isinstance(jobs, dict):
+            jobs = [jobs]
+        elif not isinstance(jobs, list):
+            raise OutputParserException("LLM output is not a JSON array.")
+
+        print("=== PARSED JOB COUNT ===", len(jobs))
+        return jobs
 
     def write_mail(self, job, links: str):
         """
