@@ -100,7 +100,7 @@ class Chain:
             {link_list}
 
             ### INSTRUCTION:
-            You are **Sanket Borse**, a Business Development Executive at **Accenture**.
+            You are **Sanket Borse**, a Business Development Executive at **Borse Technologies**.
             Accenture is an AI & Software Consulting company dedicated to facilitating
             the seamless integration of business processes through automated tools.
             Over your experience, you have empowered numerous enterprises with tailored solutions,
