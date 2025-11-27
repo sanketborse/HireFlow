@@ -1,25 +1,27 @@
+import os
+import uuid
 import pandas as pd
 import chromadb
-import uuid
-import os
+
+# 🔇 Disable Chroma telemetry noise
+os.environ["ANONYMIZED_TELEMETRY"] = "FALSE"
 
 
 class Portfolio:
     def __init__(self, file_path=None):
         if file_path is None:
-            # Default to ../my_portfolio.csv relative to this file
+            # Default my_portfolio.csv one level up from this file
             file_path = os.path.join(os.path.dirname(__file__), "../my_portfolio.csv")
 
         self.file_path = file_path
         self.data = pd.read_csv(self.file_path)
 
-        # Persistent Chroma client
         self.chroma_client = chromadb.PersistentClient("vectorstore")
         self.collection = self.chroma_client.get_or_create_collection(name="portfolio")
 
     def load_portfolio(self):
         """
-        Load portfolio data into ChromaDB only if not already loaded.
+        Load portfolio data into ChromaDB only once.
         """
         if self.collection.count() == 0:
             for _, row in self.data.iterrows():
@@ -35,8 +37,11 @@ class Portfolio:
     def query_links(self, skills):
         """
         Query ChromaDB using skills as query_texts.
-        Handles all weird types (int, None, etc.) safely.
+        Always normalizes skills so Chroma never receives an int.
         """
+
+        # --- DEBUG (optional, you can keep for now) ---
+        print("DEBUG skills BEFORE normalize:", repr(skills), type(skills))
 
         # Normalize skills into a list of strings
         if skills is None:
@@ -50,9 +55,10 @@ class Portfolio:
         else:
             skills = []
 
+        print("DEBUG skills AFTER normalize:", repr(skills), type(skills))
+
         if len(skills) == 0:
             return []
 
         result = self.collection.query(query_texts=skills, n_results=2)
-        # result["metadatas"] is usually a list-of-lists
         return result.get("metadatas", [])
