@@ -39,6 +39,7 @@ class Chain:
             If there are multiple roles, return a JSON array of objects.
             If there is only one role, still return it as a JSON array with one object.
             Only return the valid JSON. No explanation, no markdown, no comments.
+            Even if the information is incomplete, still return a best-effort list of jobs.
 
             ### VALID JSON (NO PREAMBLE):
             """
