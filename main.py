@@ -6,90 +6,107 @@ from portfolio import Portfolio
 from utils import clean_text
 
 
-# ---------- PREMIUM PAGE CONFIG ----------
+# ---------- PAGE CONFIG ----------
 st.set_page_config(
     layout="wide",
     page_title="HireFlow",
-    page_icon="📧"
+    page_icon="📧",
 )
 
-# ---------- CUSTOM PREMIUM CSS ----------
+# ---------- PREMIUM CSS ----------
 premium_css = """
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
+/* Global font */
 html, body, [class*="st-"] {
     font-family: "Inter", sans-serif;
 }
 
-.center-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+/* Center main content and limit width */
+.main .block-container {
+    max-width: 900px;
+    padding-top: 4rem;
+    margin: 0 auto;
 }
 
+/* Titles */
+.app-title {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.25rem;
+}
+.app-subtitle {
+    text-align: center;
+    font-size: 1.15rem;
+    opacity: 0.8;
+    margin-bottom: 2.5rem;
+}
+
+/* Card container */
 .card {
-    background: #ffffff15;
-    padding: 2.5rem;
+    background: #111827cc;
+    padding: 2.2rem 2.4rem;
     border-radius: 18px;
-    backdrop-filter: blur(10px);
-    border: 1px solid #ffffff25;
-    width: 60%;
-    margin-top: 40px;
-    box-shadow: 0 0 25px rgba(0,0,0,0.12);
+    border: 1px solid #4b5563;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5);
 }
 
+/* Inputs */
 .stTextInput > div > div > input {
     text-align: center;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+    padding: 0.6rem 0.5rem;
 }
 
-.stButton>button {
-    width: 50%;
+/* Button */
+.stButton > button {
+    width: 100%;
     border-radius: 10px;
     padding: 0.7rem 1rem;
-    font-size: 1.1rem;
-    margin: 0 auto;
-    display: block;
+    font-size: 1.05rem;
+    margin-top: 0.8rem;
 }
 
+/* Headings */
 h1, h2, h3, h4 {
-    text-align: center !important;
+    text-align: left;
 }
 
+/* Results spacing */
+.results-separator {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+}
 </style>
 """
-
 st.markdown(premium_css, unsafe_allow_html=True)
 
 
 def create_streamlit_app(llm, portfolio, clean_text_fn):
 
-    st.markdown("<div class='center-container'>", unsafe_allow_html=True)
-
+    # ---------- HEADER ----------
+    st.markdown("<div class='app-title'>📧 HireFlow</div>", unsafe_allow_html=True)
     st.markdown(
-        "<h1 style='font-size:3rem; font-weight:700; margin-top:20px;'>📧 HireFlow</h1>",
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        "<p style='font-size:1.3rem; opacity:0.8; margin-top:-10px;'>AI-Powered Outreach & Lead Generation</p>",
-        unsafe_allow_html=True
+        "<div class='app-subtitle'>AI-Powered Outreach &amp; Lead Generation</div>",
+        unsafe_allow_html=True,
     )
 
+    # ---------- INPUT CARD ----------
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    # ---------------- UI INPUT ----------------
     url_input = st.text_input(
-        "",
+        label="",
         value="",
         placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
     )
 
     submit_button = st.button("Analyze Careers Page")
 
-    # ---------------- LOGIC ----------------
+    st.markdown("</div>", unsafe_allow_html=True)  # close card
+
+    # ---------- LOGIC + RESULTS ----------
     if submit_button:
         if not url_input.startswith(("http://", "https://")):
             st.error("Enter a valid URL starting with http:// or https://")
@@ -113,13 +130,13 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
                 st.warning("No jobs detected on this page.")
                 return
 
-            st.markdown("<hr>", unsafe_allow_html=True)
+            st.markdown("<div class='results-separator'><hr></div>", unsafe_allow_html=True)
 
             for idx, job in enumerate(jobs, start=1):
-
-                st.markdown(f"<h3>🧩 Job #{idx}</h3>", unsafe_allow_html=True)
+                st.markdown(f"### 🧩 Job #{idx}")
                 st.json(job)
 
+                # ------- Skill normalization -------
                 skills = job.get("skills", [])
 
                 if skills is None:
@@ -133,8 +150,10 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
                 else:
                     skills = []
 
+                # DEBUG
                 print("DEBUG skills in main:", repr(skills), type(skills))
 
+                # ------- Portfolio links -------
                 links_meta = portfolio.query_links(skills)
 
                 flat_links = []
@@ -147,18 +166,16 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
 
                 link_list_str = "\n".join(set(flat_links)) if flat_links else ""
 
+                # ------- Email generation -------
                 email = llm.write_mail(job, link_list_str)
 
-                st.markdown("<h4>✉ Generated Cold Email</h4>", unsafe_allow_html=True)
+                st.markdown("#### ✉ Generated Cold Email")
                 st.code(email, language="markdown")
 
         except Exception as e:
             import traceback
             st.error(f"An Error Occurred: {e}")
             st.code(traceback.format_exc())
-
-    st.markdown("</div>", unsafe_allow_html=True)      # close card
-    st.markdown("</div>", unsafe_allow_html=True)      # close center-container
 
 
 # Run app
