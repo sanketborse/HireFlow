@@ -97,10 +97,12 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
     url_input = st.text_input(
-        label="",
-        value="",
-        placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
-    )
+    label="Enter careers page URL",
+    value="",
+    placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
+    label_visibility="collapsed"
+)
+
 
     submit_button = st.button("Analyze Careers Page")
 
