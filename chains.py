@@ -100,8 +100,8 @@ class Chain:
             {link_list}
 
             ### INSTRUCTION:
-            You are **Sanket Borse**, a Business Development Executive at **Borse Technologies**.
-            Accenture is an AI & Software Consulting company dedicated to facilitating
+            You are **Alex Hardy**, a Business Development Executive at **Apex Systems Consulting**.
+            Apex Systems Consulting is an AI & Software Consulting company dedicated to facilitating
             the seamless integration of business processes through automated tools.
             Over your experience, you have empowered numerous enterprises with tailored solutions,
             fostering scalability, process optimization, cost reduction, and heightened efficiency.
