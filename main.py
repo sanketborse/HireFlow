@@ -87,7 +87,7 @@ st.markdown(premium_css, unsafe_allow_html=True)
 def create_streamlit_app(llm, portfolio, clean_text_fn):
 
     # ---------- HEADER ----------
-    st.markdown("<div class='app-title'>📧 HireFlow</div>", unsafe_allow_html=True)
+    st.markdown("<div class='app-title'>HireFlow</div>", unsafe_allow_html=True)
     st.markdown(
         "<div class='app-subtitle'>AI-Powered Outreach &amp; Lead Generation</div>",
         unsafe_allow_html=True,
@@ -104,7 +104,7 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
 )
 
 
-    submit_button = st.button("Analyze Careers Page")
+    submit_button = st.button("Generate")
 
     st.markdown("</div>", unsafe_allow_html=True)  # close card
 
