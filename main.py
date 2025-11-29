@@ -99,7 +99,7 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
     url_input = st.text_input(
         label="Enter careers page URL",
         value="",
-        placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
+        placeholder="Paste careers page URL here",
         label_visibility="collapsed",
     )
 
