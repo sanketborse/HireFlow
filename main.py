@@ -94,7 +94,7 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
     )
 
     # ---------- INPUT CARD ----------
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
+   # st.markdown("<div class='card'>", unsafe_allow_html=True)
 
     url_input = st.text_input(
         label="Enter careers page URL",
