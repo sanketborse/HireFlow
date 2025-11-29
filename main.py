@@ -69,7 +69,7 @@ html, body, [class*="st-"] {
     margin-top: 0.8rem;
 }
 
-/* Headings */
+/* Headings in results */
 h1, h2, h3, h4 {
     text-align: left;
 }
@@ -97,14 +97,13 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
     url_input = st.text_input(
-    label="Enter careers page URL",
-    value="",
-    placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
-    label_visibility="collapsed"
-)
+        label="Enter careers page URL",
+        value="",
+        placeholder="Paste careers page URL here (e.g. https://company.com/careers)",
+        label_visibility="collapsed",
+    )
 
-
-    submit_button = st.button("Generate")
+    submit_button = st.button("Generate", use_container_width=True)
 
     st.markdown("</div>", unsafe_allow_html=True)  # close card
 
@@ -132,7 +131,10 @@ def create_streamlit_app(llm, portfolio, clean_text_fn):
                 st.warning("No jobs detected on this page.")
                 return
 
-            st.markdown("<div class='results-separator'><hr></div>", unsafe_allow_html=True)
+            st.markdown(
+                "<div class='results-separator'><hr></div>",
+                unsafe_allow_html=True,
+            )
 
             for idx, job in enumerate(jobs, start=1):
                 st.markdown(f"### 🧩 Job #{idx}")
